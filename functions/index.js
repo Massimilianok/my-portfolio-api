@@ -6,32 +6,35 @@ const fetch = require('node-fetch');
 const dotenv = require('dotenv');
 const nodemailer = require('nodemailer');
 
-const app = express();
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: process.env.USERNAME_GMAIL,
-    pass: process.env.PASS_GMAIL,
-  },
-});
-
 dotenv.config();
+const app = express();
 app.use(bodyParser.json());
 app.use(cors());
 
-app.get('/send', (req, res) => {
-  let mailOptions = {
-    from: 'massimiliano.rizzuto87@gmail.com',
+const transport = nodemailer.createTransport({
+  host: 'smtp.mailtrap.io',
+  port: 2525,
+  auth: {
+    user: process.env.MAILTRAP_USERNAME,
+    pass: process.env.MAILTRAP_PASS,
+  },
+});
+
+app.post('/send', (req, res) => {
+  const mailOptions = {
+    from: req.body.email,
     to: 'massimiliano.rizzuto87@gmail.com',
-    subject: 'Sending Email using Node.js',
-    text: 'Test text!',
+    subject: 'Message from Portfolio contact form',
+    text: req.body.message,
   };
 
-  transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-      console.log(error);
+  transport.sendMail(mailOptions, (err, info) => {
+    if (err) {
+      console.log(err);
+      res.status(500).send('Server errors');
     } else {
       console.log('Email sent: ' + info.response);
+      res.status(200).send('Success');
     }
   });
 });
@@ -94,8 +97,11 @@ app.get('/repos', (req, res) => {
       );
       return Promise.all(repoUpdate).then((data) => data);
     })
-    .then((data) => res.send(data))
-    .catch((err) => console.log(err));
+    .then((data) => res.status(200).json(data))
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send('Server errors');
+    });
 });
 
 // // Create and Deploy Your First Cloud Functions
