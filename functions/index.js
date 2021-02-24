@@ -3,12 +3,41 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const fetch = require('node-fetch');
-require('dotenv').config();
+const dotenv = require('dotenv');
+const nodemailer = require('nodemailer');
 
+dotenv.config();
 const app = express();
-app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cors());
+
+const transport = nodemailer.createTransport({
+  host: 'smtp.mailtrap.io',
+  port: 2525,
+  auth: {
+    user: process.env.MAILTRAP_USERNAME,
+    pass: process.env.MAILTRAP_PASS,
+  },
+});
+
+app.post('/send', (req, res) => {
+  const mailOptions = {
+    from: req.body.email,
+    to: 'massimiliano.rizzuto87@gmail.com',
+    subject: 'Message from Portfolio contact form',
+    text: req.body.message,
+  };
+
+  transport.sendMail(mailOptions, (err, info) => {
+    if (err) {
+      console.log(err);
+      res.status(500).send('Server errors');
+    } else {
+      console.log('Email sent: ' + info.response);
+      res.status(200).send('Success');
+    }
+  });
+});
 
 app.get('/repos', (req, res) => {
   fetch('https://api.github.com/users/Massimilianok/repos', {
@@ -68,8 +97,11 @@ app.get('/repos', (req, res) => {
       );
       return Promise.all(repoUpdate).then((data) => data);
     })
-    .then((data) => res.send(data))
-    .catch((err) => console.log(err));
+    .then((data) => res.status(200).json(data))
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send('Server errors');
+    });
 });
 
 // // Create and Deploy Your First Cloud Functions
