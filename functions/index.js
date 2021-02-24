@@ -3,12 +3,38 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const fetch = require('node-fetch');
-require('dotenv').config();
+const dotenv = require('dotenv');
+const nodemailer = require('nodemailer');
 
 const app = express();
-app.use(bodyParser.urlencoded({ extended: false }));
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  auth: {
+    user: process.env.USERNAME_GMAIL,
+    pass: process.env.PASS_GMAIL,
+  },
+});
+
+dotenv.config();
 app.use(bodyParser.json());
 app.use(cors());
+
+app.get('/send', (req, res) => {
+  let mailOptions = {
+    from: 'massimiliano.rizzuto87@gmail.com',
+    to: 'massimiliano.rizzuto87@gmail.com',
+    subject: 'Sending Email using Node.js',
+    text: 'Test text!',
+  };
+
+  transporter.sendMail(mailOptions, (error, info) => {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log('Email sent: ' + info.response);
+    }
+  });
+});
 
 app.get('/repos', (req, res) => {
   fetch('https://api.github.com/users/Massimilianok/repos', {
