@@ -101,5 +101,13 @@ app.get('/repos', (req, res) => {
     });
 });
 
+app.get('/', (req, res) => {
+  res.send('Welcome to Massimiliano Rizzuto Portfolio API 😎');
+});
+
+app.all('*', (req, res) => {
+  res.redirect('/');
+});
+
 const port = process.env.PORT || 8080;
 app.listen(port, () => console.log(`Server is running on port: ${port}`));
