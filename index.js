@@ -1,14 +1,11 @@
-const functions = require('firebase-functions');
+require('dotenv').config();
 const express = require('express');
-const bodyParser = require('body-parser');
 const cors = require('cors');
 const fetch = require('node-fetch');
-const dotenv = require('dotenv');
 const nodemailer = require('nodemailer');
 
-dotenv.config();
 const app = express();
-app.use(bodyParser.json());
+app.use(express.json());
 app.use(cors());
 
 const transport = nodemailer.createTransport({
@@ -104,7 +101,5 @@ app.get('/repos', (req, res) => {
     });
 });
 
-// // Create and Deploy Your First Cloud Functions
-// // https://firebase.google.com/docs/functions/write-firebase-functions
-
-exports.app = functions.https.onRequest(app);
+const port = process.env.PORT || 8080;
+app.listen(port, () => console.log(`Server is running on port: ${port}`));
