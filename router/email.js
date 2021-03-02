@@ -1,8 +1,15 @@
 require('dotenv').config();
 const express = require('express');
 const nodemailer = require('nodemailer');
+const { body, validationResult } = require('express-validator');
 
 const router = express.Router();
+
+const validateEmailData = [
+  body('fullName').notEmpty().trim().escape(),
+  body('email').notEmpty().isEmail().normalizeEmail(),
+  body('message').notEmpty().trim().escape(),
+];
 
 const transport = nodemailer.createTransport({
   host: process.env.MAILTRAP_HOST,
@@ -13,12 +20,19 @@ const transport = nodemailer.createTransport({
   },
 });
 
-router.post('/send', (req, res) => {
+router.post('/send', validateEmailData, (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(422).json({ code: 422, errors: errors.array() });
+  }
+
+  const { fullName, email, message } = req.body;
+
   const mailOptions = {
-    from: req.body.email,
-    to: 'massimiliano.rizzuto87@gmail.com',
-    subject: 'Message from Portfolio contact form',
-    text: req.body.message,
+    from: email,
+    to: 'Massimiliano Rizzuto',
+    subject: `Message from ${fullName}`,
+    text: message,
   };
 
   transport.sendMail(mailOptions, (err, info) => {
