@@ -2,7 +2,7 @@
   "name": "my-portfolio-api",
   "author": "Massimiliano Rizzuto",
   "description": "My Portfolio API",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
