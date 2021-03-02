@@ -14,14 +14,21 @@ API to serve data, from my GitHub repositories, to my [`my-portfolio-app`](https
 - express
 - node-fetch
 - dotenv
+- cors
+- express-validator
+- nodemailer
 
 ## Third party API
 
 - GitHub API
 
+## SMTP service
+
+- Mailtrap
+
 ## Hosting
 
-- Google Firebase
+- Heroku
 
 ## License
 
