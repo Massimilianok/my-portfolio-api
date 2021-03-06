@@ -29,7 +29,7 @@ router.post('/send', validateEmailData, (req, res) => {
 
   const mailOptions = {
     from: email,
-    to: 'Massimiliano Rizzuto',
+    to: 'massimiliano.rizzuto87@gmail.com',
     subject: `Message from ${fullName}`,
     text: message,
   };
